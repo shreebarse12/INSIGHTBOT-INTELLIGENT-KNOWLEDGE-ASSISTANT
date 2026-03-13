@@ -5,7 +5,8 @@
 Built as part of the **NeoStats AI Engineer Case Study**.
 
 ---
-
+## Live Project Link :https://insightbot-intelligent-knowledge-assistant.streamlit.app/
+---
 ## 📌 Table of Contents
 
 - [Overview](#overview)
