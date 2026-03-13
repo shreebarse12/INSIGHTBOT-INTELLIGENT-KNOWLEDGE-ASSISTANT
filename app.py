@@ -1,12 +1,5 @@
-# app.py
-# Main Streamlit UI
-# Connects all pieces together:
-# LLM + RAG + Web Search + Response Modes
-
 import streamlit as st
 from dotenv import load_dotenv
-
-# Load .env FIRST before anything else
 load_dotenv()
 
 from models.llm import get_chatgroq_model
@@ -22,25 +15,16 @@ from utils.rag_utils import (
 )
 from utils.search_utils import web_search
 
-# ── Page Setup ────────────────────────────────────────
 st.set_page_config(
-    page_title="LegalBot ⚖️",
+    page_title="Insightbot ⚖️",
     page_icon="⚖️",
     layout="wide"
 )
 
-st.title("⚖️ LegalBot — AI Legal Document Assistant")
-st.caption("Upload a legal document and ask questions, or search the web.")
+st.title("⚖️ Insightbot — Intelligent knowledge Ai assistant")
+st.caption("Upload a document and ask questions, or search the web.")
 
-
-# ── Helper: Convert messages to LangChain format ──────
 def convert_messages(messages: list) -> list:
-    """
-    Converts Streamlit dict messages to LangChain message objects.
-    
-    Streamlit stores: {"role": "user", "content": "Hello"}
-    LangChain needs:  HumanMessage(content="Hello")
-    """
     result = []
     for msg in messages:
         role = msg.get("role", "")
@@ -57,12 +41,7 @@ def convert_messages(messages: list) -> list:
 
 # ── Helper: Get LLM Response ──────────────────────────
 def get_response(messages: list, system_prompt: str) -> str:
-    """
-    Builds prompt + runs LangChain chain + returns response string.
     
-    Uses get_chatgroq_model() from models/llm.py
-    Chain: prompt_template | llm | StrOutputParser
-    """
     try:
         llm = get_chatgroq_model()
 
@@ -71,7 +50,6 @@ def get_response(messages: list, system_prompt: str) -> str:
             MessagesPlaceholder(variable_name="chat_history"),
         ])
 
-        # pipe operator: prompt → llm → parse to string
         chain = prompt_template | llm | StrOutputParser()
 
         response = chain.invoke({
@@ -85,19 +63,17 @@ def get_response(messages: list, system_prompt: str) -> str:
         return f"Error: {str(e)}"
 
 
-# ── Sidebar ───────────────────────────────────────────
+# ── Sidebar ─
 with st.sidebar:
     st.header("⚙️ Settings")
 
-    # Response Mode
-    # Changes how the system prompt instructs the LLM
     response_mode = st.radio(
         "📝 Response Mode",
         ["Concise", "Detailed"],
         help="Concise = 2-3 sentences. Detailed = full explanation."
     )
 
-    # Web Search Toggle
+    # Web Search 
     use_web_search = st.toggle(
         "🌐 Enable Web Search",
         value=False,
@@ -126,9 +102,9 @@ with st.sidebar:
         st.rerun()
 
 
-# ── PDF Processing ────────────────────────────────────
+# ── PDF Processing 
 if uploaded_file is not None:
-    # Only process if it's a new file
+
     if st.session_state.get("loaded_file") != uploaded_file.name:
         with st.spinner("Processing document..."):
             try:
@@ -148,7 +124,7 @@ if uploaded_file is not None:
                 st.sidebar.error(f"Error: {e}")
 
 
-# ── Chat History ──────────────────────────────────────
+# ── Chat History 
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -157,18 +133,15 @@ for msg in st.session_state.messages:
         st.markdown(msg["content"])
 
 
-# ── Chat Input ────────────────────────────────────────
+# ── Chat Input 
 if prompt := st.chat_input("Ask anything..."):
 
-    # Show user message
     with st.chat_message("user"):
         st.markdown(prompt)
     st.session_state.messages.append({"role": "user", "content": prompt})
 
-    # Step 1: Try RAG first
     context = ""
     context_source = ""
-
     if "vector_store" in st.session_state:
         context = retrieve_relevant_chunks(
             prompt,
@@ -177,14 +150,12 @@ if prompt := st.chat_input("Ask anything..."):
         if context:
             context_source = "📄 Based on your uploaded document"
 
-    # Step 2: Fall back to web search
     if use_web_search and not context:
         with st.spinner("🌐 Searching web..."):
             context = web_search(prompt)
             if context:
                 context_source = "🌐 Based on live web search"
 
-    # Step 3: Build system prompt based on response mode
     if response_mode == "Concise":
         mode_instruction = (
             "Give a SHORT and CONCISE answer. "
