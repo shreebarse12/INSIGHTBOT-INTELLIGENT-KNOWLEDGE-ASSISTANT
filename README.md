@@ -228,11 +228,3 @@ EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 | FAISS failing on Linux (Streamlit Cloud) | Created `packages.txt` with `libgomp1` system dependency |
 
 ---
-
-## 📄 License
-
-This project was built for the NeoStats AI Engineer technical interview assignment.
-
----
-
-*Built with ❤️ using Groq · LangChain · FAISS · Tavily · Streamlit*
