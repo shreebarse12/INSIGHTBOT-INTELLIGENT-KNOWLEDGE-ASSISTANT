@@ -33,7 +33,9 @@ InsightBot addresses this by combining three powerful capabilities:
 
 ## 📸 App Screenshot
 
-![InsightBot UI](screenshot.png)
+<p align="center">
+  <img src="screenshot (1).png" alt="Flow Diagram" style="width:100%; max-width:1200px;">
+</p>
 
 > **Shown above:** InsightBot answering questions from an uploaded PDF resume in Detailed mode. The sidebar shows Response Mode toggle, Web Search toggle, PDF upload with 8 chunks loaded, and Clear Chat button.
 
